@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ReviewRegisterDto {
+public class ReviewRequestDto {
     String type;
     String action;
     String reviewId;
