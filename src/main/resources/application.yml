@@ -1,2 +1,15 @@
 server:
   port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tripleDB
+    username: root
+    password: root1234
+
+jpa:
+  properties:
+    hibernate:
+      show_sql: true
+      format_sql: true
