@@ -17,11 +17,15 @@ public class ReviewRegisterController {
 
     private final ReviewRegisterService reviewRegisterService;
 
+    static String add = "ADD";
+    static String mod = "MOD";
+    static String delete = "DELETE";
+
     @PostMapping("/events")
     public ResponseEntity<String> reviewRegister(@RequestBody ReviewRequestDto reviewRequestDto) {
-        // 파라미터 검증
+         // 파라미터 검증
 //        if (reviewRegisterDto.getType().equals("REVIEW")) {
-//            // todo error return
+//            // TODO error return
 //            return null;
 //        }
 
@@ -29,14 +33,17 @@ public class ReviewRegisterController {
         log.info("action : {} ", reviewRequestDto.getAction());
         log.info("review_id : {} ", reviewRequestDto.getReviewId());
 
-        // todo 서비스 호출
-        if (reviewRequestDto.getAction().equals("ADD")) {
+        // TODO 서비스 호출
+        if(add.equals(reviewRequestDto.getAction()))
+        {
             reviewRegisterService.reviewRegister(reviewRequestDto);
         }
-        else if(reviewRequestDto.getAction().equals("MOD")) {
+        else if(mod.equals(reviewRequestDto.getAction()))
+        {
             reviewRegisterService.reviewUpdate(reviewRequestDto);
         }
-        else if(reviewRequestDto.getAction().equals("DELETE")) {
+        else if(delete.equals(reviewRequestDto.getAction()))
+        {
             reviewRegisterService.reviewDelete(reviewRequestDto);
         }
 

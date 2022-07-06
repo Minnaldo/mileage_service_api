@@ -26,7 +26,7 @@ public class ReviewRegisterService {
         reviewEntity.setPlaceId(reviewRequestDto.getPlaceId());
 
 
-        // todo Repository 호출
+        // TODO Repository 호출
         reviewRegisterRepository.save(reviewEntity);
 
         log.info("save review_id : {} is saved.", reviewRequestDto.getReviewId());
@@ -50,7 +50,7 @@ public class ReviewRegisterService {
             reviewRegisterRepository.save(reviewEntity);
         });
 
-        // todo Repository 호출
+        // TODO Repository 호출
         reviewRegisterRepository.save(reviewEntity);
 
         log.info("update review_id : {} is update.", reviewRequestDto.getReviewId());
@@ -64,7 +64,7 @@ public class ReviewRegisterService {
 
         Optional<Review> review = reviewRegisterRepository.findById(reviewRequestDto.getReviewId());
 
-        // todo Repository 호출
+        // TODO Repository 호출
         review.ifPresent(selectReview -> {
             reviewRegisterRepository.delete(selectReview);
         });
