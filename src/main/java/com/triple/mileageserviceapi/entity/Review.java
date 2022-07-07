@@ -1,6 +1,9 @@
 package com.triple.mileageserviceapi.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,11 +33,14 @@ public class Review {
     @Column(name = "place_id")
     private String placeId;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
