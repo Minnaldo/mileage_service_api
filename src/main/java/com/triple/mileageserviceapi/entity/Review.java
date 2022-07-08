@@ -3,7 +3,6 @@ package com.triple.mileageserviceapi.entity;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,6 +23,7 @@ public class Review {
 
     private String content;
 
+    // TODO Photo String -> 배열로
     @Column(name = "attached_photo_ids")
     private String attachedPhotoIds;
 

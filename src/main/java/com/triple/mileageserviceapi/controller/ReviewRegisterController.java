@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ReviewRegisterController {
 
+    private final ReviewRegisterService reviewRegisterService;
+
     static String add = "ADD";
     static String mod = "MOD";
     static String delete = "DELETE";
-    private final ReviewRegisterService reviewRegisterService;
 
     @PostMapping("/events")
     public ResponseEntity<String> reviewRegister(@RequestBody ReviewRequestDto reviewRequestDto) {
@@ -35,7 +36,7 @@ public class ReviewRegisterController {
         // TODO 서비스 호출
         if (add.equals(reviewRequestDto.getAction())) {
             reviewRegisterService.reviewRegister(reviewRequestDto);
-
+            log.info("service dto review_id : {} ", reviewRequestDto.getReviewId());
         } else if (mod.equals(reviewRequestDto.getAction())) {
             reviewRegisterService.reviewUpdate(reviewRequestDto);
         } else if (delete.equals(reviewRequestDto.getAction())) {

@@ -9,10 +9,9 @@ import com.triple.mileageserviceapi.repository.ReviewRegisterRepository;
 import com.triple.mileageserviceapi.repository.UserPointRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.LifecycleState;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Slf4j
@@ -24,12 +23,29 @@ public class ReviewRegisterService {
     private final PointRewardRepository pointRewardRepository;
     private final UserPointRepository userPointRepository;
 
+    static int CONTENT = 1;
+    static int PHOTO = 2;
+    static int FIRSTPLACE = 3;
+    static int POINT_INCREMENT = 1;
+    static int POINT_DECREMENT = 2;
 
     public int reviewRegister(ReviewRequestDto reviewRequestDto) {
-        Review reviewEntity = new Review();
-        Point pointEntity = new Point();
-        User userEntity = new User();
 
+        int point_sum = 0;
+
+        Point firstPlacePointEntity = new Point();
+        if (reviewRegisterRepository.existsByPlaceId(reviewRequestDto.getPlaceId()) == false)
+        {
+            firstPlacePointEntity.setType(FIRSTPLACE);
+            firstPlacePointEntity.setPoint(1);
+            firstPlacePointEntity.setMark(POINT_INCREMENT);
+            firstPlacePointEntity.setReviewId(reviewRequestDto.getReviewId());
+            firstPlacePointEntity.setUserId(reviewRequestDto.getUserId());
+
+            point_sum += 1;
+        }
+
+        Review reviewEntity = new Review();
         reviewEntity.setContent(reviewRequestDto.getContent());
         reviewEntity.setReviewId(reviewRequestDto.getReviewId());
         reviewEntity.setAttachedPhotoIds(reviewRequestDto.getAttachedPhotoIds());
@@ -39,59 +55,56 @@ public class ReviewRegisterService {
         // TODO reviewRegisterRepository 호출
         reviewRegisterRepository.save(reviewEntity);
 
-
         log.info("save review_id : {} is saved.", reviewRequestDto.getReviewId());
 
         // TODO PointRewardRepository 호출
+        Point contentPointEntity = new Point();
         if (reviewRequestDto.getContent().length() > 1)     // 내용 1자 이상
         {
-            pointEntity.setPoint(1);
-            pointEntity.setReviewId(reviewRequestDto.getReviewId());
-            pointEntity.setType(1);
-            pointEntity.setUserId(reviewRequestDto.getUserId());
+            contentPointEntity.setType(CONTENT);
+            contentPointEntity.setPoint(1);
+            contentPointEntity.setMark(POINT_INCREMENT);
+            contentPointEntity.setReviewId(reviewRequestDto.getReviewId());
+            contentPointEntity.setUserId(reviewRequestDto.getUserId());
 
-            pointRewardRepository.save(pointEntity);
+            point_sum += 1;
 
-
-            // TODO user 에 point를 저장해줘야 함.
-            if(userEntity.getUserId() == null) {
-                userEntity.setUserId(reviewRequestDto.getUserId());
-                userEntity.setPoint(pointEntity.getPoint());
-
-            }
-            else {
-                Optional<User> user = userPointRepository.findById(reviewRequestDto.getUserId());
-
-                user.ifPresent(selectUser -> {
-                    userEntity.setPoint(pointEntity.getPoint() + 1);
-                });
-            }
-            userPointRepository.save(userEntity);
+            log.info("content test");
         }
 
+        Point photoPointEntity = new Point();
         if (reviewRequestDto.getAttachedPhotoIds().length() > 1)   // 1장 이상
         {
-            pointEntity.setPoint(1);
-            pointEntity.setReviewId(reviewRequestDto.getReviewId());
-            pointEntity.setType(1);
-            pointEntity.setUserId(reviewRequestDto.getUserId());
+            photoPointEntity.setType(PHOTO);
+            photoPointEntity.setPoint(1);
+            photoPointEntity.setMark(POINT_INCREMENT);
+            photoPointEntity.setReviewId(reviewRequestDto.getReviewId());
+            photoPointEntity.setUserId(reviewRequestDto.getUserId());
 
-            pointRewardRepository.save(pointEntity);
+            point_sum += 1;
+        }
+
+        pointRewardRepository.save(contentPointEntity);
+        pointRewardRepository.save(photoPointEntity);
+        pointRewardRepository.save(firstPlacePointEntity);
 
 
-            // TODO user 에 point를 저장해줘야 함.
-            if(userEntity.getUserId() == null) {
-                userEntity.setUserId(reviewRequestDto.getUserId());
-                userEntity.setPoint(pointEntity.getPoint());
+        // 회원가입을 하면 user_id 를 받을테니, null 일수는 없지만
+        // 회원가입을 하지 않은 회원이, user_id를 가지고 리뷰를 쓸 경우라고 판단하여 작성
+        // 회원가입 관련 기능이 명세되어 있지 않으므로, 새로운 user면 저장하였음.
+        Optional<User> user = userPointRepository.findById(reviewRequestDto.getUserId());
 
-            }
-            else {
-                Optional<User> user = userPointRepository.findById(reviewRequestDto.getUserId());
+        if (user.isPresent()) {
+            user.get().setPoint(user.get().getPoint() + point_sum);
 
-                user.ifPresent(selectUser -> {
-                   userEntity.setPoint(pointEntity.getPoint() + 1);
-                });
-            }
+            userPointRepository.save(user.get());
+        }
+        else {
+            User userEntity = new User();
+
+            userEntity.setUserId(reviewRequestDto.getUserId());
+            userEntity.setPoint(point_sum);
+
             userPointRepository.save(userEntity);
         }
 
@@ -100,10 +113,8 @@ public class ReviewRegisterService {
 
 
     public int reviewUpdate(ReviewRequestDto reviewRequestDto) {
-        Review reviewEntity = new Review();
-        Point pointEntity = new Point();
-        User userEntity = new User();
 
+        Review reviewEntity = new Review();
         Optional<Review> review = reviewRegisterRepository.findById(reviewRequestDto.getReviewId());
 
         review.ifPresent(selectReview -> {
@@ -114,9 +125,10 @@ public class ReviewRegisterService {
             reviewEntity.setPlaceId(reviewRequestDto.getPlaceId());
 
         });
-
+        log.info("update save");
         // TODO Repository 호출
         reviewRegisterRepository.save(reviewEntity);
+
 
 
         return 0;
