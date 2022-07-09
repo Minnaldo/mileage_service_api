@@ -156,23 +156,10 @@ public class ReviewRegisterService {
         if (checkContent == 1 && contentPoint != null) {
             //그냥 넘어감.
         } else if (checkContent == 0 && contentPoint != null) {
-            Optional<User> user = userPointRepository.findById(reviewRequestDto.getUserId());
-            Point contentPointEntity = new Point();
-            contentPointEntity.setUserId(contentPoint.getUserId());
-            contentPointEntity.setType(CONTENT);
-            contentPointEntity.setPoint(1);
-            contentPointEntity.setMark(POINT_DECREMENT);
-            contentPointEntity.setReviewId(reviewRequestDto.getReviewId());
+            int retrievedPointId = pointRetrieved(CONTENT, reviewRequestDto.getUserId());
 
-            user.get().setPoint(user.get().getPoint() - 1);
-
-            Point p = pointRewardRepository.save(contentPointEntity);
-
-            contentPoint.setRetrievedId(p.getId());
-
+            contentPoint.setRetrievedId(retrievedPointId);
             pointRewardRepository.save(contentPoint);
-
-            userPointRepository.save(user.get());
         } else if (checkContent == 1 && contentPoint == null) {
             Optional<User> user = userPointRepository.findById(reviewRequestDto.getUserId());
             Point contentPointEntity = new Point();
@@ -195,28 +182,17 @@ public class ReviewRegisterService {
         //- checkphoto 0, photoPoint 조회 값 있음 : 포인트 회수
         //- checkphoto 1, photoPoint 조회 값 없음 : 포인트 +1
         //- checkphoto 0, photoPoint 조회 값 없음 : 그냥 넘어감
-        Optional<User> user2 = userPointRepository.findById(reviewRequestDto.getUserId());
-        Point photoPointEntity = new Point();
 
         if (checkPhoto == 1 && photoPoint != null) {
             //그냥 넘어감.
         } else if (checkPhoto == 0 && photoPoint != null) {
-            photoPointEntity.setUserId(photoPoint.getUserId());
-            photoPointEntity.setType(PHOTO);
-            photoPointEntity.setPoint(1);
-            photoPointEntity.setMark(POINT_DECREMENT);
-            photoPointEntity.setReviewId(reviewRequestDto.getReviewId());
+            int retrievedPointId = pointRetrieved(PHOTO, reviewRequestDto.getUserId());
 
-            user2.get().setPoint(user2.get().getPoint() - 1);
-
-            Point p = pointRewardRepository.save(photoPointEntity);
-
-            photoPoint.setRetrievedId(p.getId());
-
+            photoPoint.setRetrievedId(retrievedPointId);
             pointRewardRepository.save(photoPoint);
-
-            userPointRepository.save(user2.get());
         } else if (checkPhoto == 1 && photoPoint == null) {
+            Optional<User> user2 = userPointRepository.findById(reviewRequestDto.getUserId());
+            Point photoPointEntity = new Point();
             photoPointEntity.setUserId(reviewRequestDto.getUserId());
             photoPointEntity.setType(PHOTO);
             photoPointEntity.setPoint(1);
@@ -251,23 +227,10 @@ public class ReviewRegisterService {
         Point contentPoint = pointRewardRepository.findByReviewIdAndTypeAndMarkAndRetrievedIdIsNull(reviewRequestDto.getReviewId(), CONTENT, POINT_INCREMENT);
 
         if (contentPoint != null) {
-            Point contentPointEntity = new Point();
-            contentPointEntity.setUserId(contentPoint.getUserId());
-            contentPointEntity.setType(CONTENT);
-            contentPointEntity.setPoint(1);
-            contentPointEntity.setMark(POINT_DECREMENT);
-            contentPointEntity.setReviewId(reviewRequestDto.getReviewId());
+            int retrievedPointId = pointRetrieved(CONTENT, reviewRequestDto.getUserId());
 
-            Optional<User> user = userPointRepository.findById(reviewRequestDto.getUserId());
-            user.get().setPoint(user.get().getPoint() - 1);
-
-            Point pointDecrement = pointRewardRepository.save(contentPointEntity);
-
-            contentPoint.setRetrievedId(pointDecrement.getId());
-
+            contentPoint.setRetrievedId(retrievedPointId);
             pointRewardRepository.save(contentPoint);
-
-            userPointRepository.save(user.get());
         }
 
 
@@ -275,50 +238,41 @@ public class ReviewRegisterService {
         Point photoPoint = pointRewardRepository.findByReviewIdAndTypeAndMarkAndRetrievedIdIsNull(reviewRequestDto.getReviewId(), PHOTO, POINT_INCREMENT);
 
         if (photoPoint != null) {
-            Point photoPointEntity = new Point();
-            photoPointEntity.setUserId(photoPoint.getUserId());
-            photoPointEntity.setType(PHOTO);
-            photoPointEntity.setPoint(1);
-            photoPointEntity.setMark(POINT_DECREMENT);
-            photoPointEntity.setReviewId(reviewRequestDto.getReviewId());
+            int retrievedPointId = pointRetrieved(PHOTO, reviewRequestDto.getUserId());
 
-            Optional<User> user2 = userPointRepository.findById(reviewRequestDto.getUserId());
-            user2.get().setPoint(user2.get().getPoint() - 1);
-
-            Point pointDecrement2 = pointRewardRepository.save(photoPointEntity);
-
-            photoPoint.setRetrievedId(pointDecrement2.getId());
-
+            photoPoint.setRetrievedId(retrievedPointId);
             pointRewardRepository.save(photoPoint);
-
-            userPointRepository.save(user2.get());
         }
 
         //firstplace point 회수
         Point firstplacePoint = pointRewardRepository.findByReviewIdAndTypeAndMarkAndRetrievedIdIsNull(reviewRequestDto.getReviewId(), FIRSTPLACE, POINT_INCREMENT);
 
         if (firstplacePoint != null) {
-            Point firstplacePointEntity = new Point();
-            firstplacePointEntity.setUserId(firstplacePoint.getUserId());
-            firstplacePointEntity.setType(FIRSTPLACE);
-            firstplacePointEntity.setPoint(1);
-            firstplacePointEntity.setMark(POINT_DECREMENT);
-            firstplacePointEntity.setReviewId(reviewRequestDto.getReviewId());
+            int retrievedPointId = pointRetrieved(FIRSTPLACE, reviewRequestDto.getUserId());
 
-            Optional<User> user3 = userPointRepository.findById(reviewRequestDto.getUserId());
-            user3.get().setPoint(user3.get().getPoint() - 1);
-
-            Point pointDecrement3 = pointRewardRepository.save(firstplacePointEntity);
-
-            firstplacePoint.setRetrievedId(pointDecrement3.getId());
-
+            firstplacePoint.setRetrievedId(retrievedPointId);
             pointRewardRepository.save(firstplacePoint);
-
-            userPointRepository.save(user3.get());
         }
 
 
         return "SUCCESS";
+    }
+
+    private int pointRetrieved(int pointType, String userId) {
+        Point retrievedPointEntity = new Point();
+        retrievedPointEntity.setUserId(userId);
+        retrievedPointEntity.setType(pointType);
+        retrievedPointEntity.setPoint(1);
+        retrievedPointEntity.setMark(POINT_DECREMENT);
+        retrievedPointEntity.setReviewId(userId);
+
+        Optional<User> user3 = userPointRepository.findById(userId);
+        user3.get().setPoint(user3.get().getPoint() - 1);
+
+        Point savedRetrievedPoint = pointRewardRepository.save(retrievedPointEntity);
+
+        userPointRepository.save(user3.get());
+        return savedRetrievedPoint.getId();
     }
 
 
