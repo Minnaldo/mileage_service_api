@@ -23,7 +23,6 @@ public class Review {
 
     private String content;
 
-    // TODO Photo String -> 배열로
     @Column(name = "attached_photo_ids")
     private String attachedPhotoIds;
 
@@ -46,6 +45,6 @@ public class Review {
     private LocalDateTime deletedAt;
 
     @Column(name = "is_delete")
-    private String isDelete;
+    private int isDelete;       // 0: 데이터 존재,  1: 데이터 삭제
 
 }

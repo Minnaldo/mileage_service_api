@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Point {
 
     @Id
@@ -28,7 +29,7 @@ public class Point {
     private int mark;
 
     @Column(name = "retrieved_id")
-    private int retrievedId;
+    private Integer retrievedId;
 
     @CreationTimestamp
     @Column(name = "created_at")
