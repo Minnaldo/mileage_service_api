@@ -1,10 +1,9 @@
 package com.triple.mileageserviceapi.entity;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,18 +12,26 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Point {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "user_id")
     private String userId;
 
-    private int point;
-
     private int type;
 
+    private int point;
+
+    private int mark;
+
+    @Column(name = "retrieved_id")
+    private Integer retrievedId;
+
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
