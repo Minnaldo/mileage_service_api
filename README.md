@@ -1,7 +1,3 @@
-## 트리플 과제 전형
-
-지원자 조 민
-
 # Project Spec
 Framework : Spring Boot (Java8) + JPA  
 DBMS : MySQL
